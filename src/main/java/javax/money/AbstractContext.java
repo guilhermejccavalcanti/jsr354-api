@@ -15,11 +15,10 @@ import java.time.Instant;
 import java.time.temporal.ChronoField;
 import java.time.temporal.TemporalAccessor;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Represents a general context of data targeting an item of type {@code Q}. Contexts are used to add arbitrary
@@ -30,17 +29,17 @@ import java.util.Set;
 @SuppressWarnings("unchecked")
 public abstract class AbstractContext implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	/**
+    /**
 	 * Key for storing the target providers to be queried
 	 */
-	public static final String KEY_PROVIDER = "provider";
+    public static final String KEY_PROVIDER = "provider";
 
-	/**
+    /**
 	 * Key name for the timestamp attribute.
 	 */
-	public static final String KEY_TIMESTAMP = "timestamp";
+    public static final String KEY_TIMESTAMP = "timestamp";
 
     /**
      * The data map containing all values.
@@ -52,8 +51,8 @@ public abstract class AbstractContext implements Serializable {
      *
      * @param builder the Builder.
      */
-	@SuppressWarnings("rawtypes")
-	protected AbstractContext(AbstractContextBuilder<?, ?> builder) {
+    @SuppressWarnings("rawtypes")
+    protected AbstractContext(AbstractContextBuilder<?, ?> builder) {
         data.putAll(builder.data);
     }
 
@@ -64,13 +63,7 @@ public abstract class AbstractContext implements Serializable {
      * @return all present keys of attributes being assignable to the type, never null.
      */
     public Set<String> getKeys(Class<?> type) {
-        Set<String> keys = new HashSet<>();
-        for (Map.Entry<String, Object> val : data.entrySet()) {
-            if (type.isAssignableFrom(val.getValue().getClass())) {
-                keys.add(val.getKey());
-            }
-        }
-        return keys;
+        return data.entrySet().stream().filter( val -> type.isAssignableFrom(val.getValue().getClass())).map(Map.Entry::getKey).collect(Collectors.toSet());
     }
 
     /**
@@ -82,7 +75,6 @@ public abstract class AbstractContext implements Serializable {
         Object val = this.data.get(key);
         return val == null ? null : val.getClass();
     }
-
 
     /**
      * Access an attribute.
@@ -109,7 +101,6 @@ public abstract class AbstractContext implements Serializable {
         return get(type.getName(), type);
     }
 
-
     /**
      * Access a Long attribute.
      *
@@ -119,7 +110,6 @@ public abstract class AbstractContext implements Serializable {
     public Long getLong(String key) {
         return get(key, Long.class);
     }
-
 
     /**
      * Access a Float attribute.
@@ -245,11 +235,7 @@ public abstract class AbstractContext implements Serializable {
      */
     public <T> Map<String, T> getValues(Class<T> type) {
         Map<String, T> result = new HashMap<>();
-        for (Map.Entry<String, Object> en : data.entrySet()) {
-            if (type.isAssignableFrom(en.getValue().getClass())) {
-                result.put(en.getKey(), type.cast(en.getValue()));
-            }
-        }
+        data.entrySet().stream().filter( en -> type.isAssignableFrom(en.getValue().getClass())).forEach( en -> result.put(en.getKey(), type.cast(en.getValue())));
         return result;
     }
 

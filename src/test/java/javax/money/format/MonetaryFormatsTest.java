@@ -9,15 +9,12 @@
 package javax.money.format;
 
 import org.testng.annotations.Test;
-
 import javax.money.MonetaryException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-
 import static org.testng.Assert.*;
-import static org.testng.Assert.assertEquals;
 
 /**
  * Tests for {@link MonetaryFormats}.
@@ -57,26 +54,20 @@ public class MonetaryFormatsTest {
 
     @Test
     public void testIsAvailable_Query() {
-        assertTrue(MonetaryFormats.isAvailable(AmountFormatQueryBuilder.of("Test")
-                .setProviderName("TestAmountFormatProvider").build()));
-        assertTrue(MonetaryFormats.isAvailable(AmountFormatQueryBuilder.of("Test")
-                .build()));
-        assertFalse(MonetaryFormats.isAvailable(AmountFormatQueryBuilder.of("Test")
-                .setProviderName("foo").build()));
+        assertTrue(MonetaryFormats.isAvailable(AmountFormatQueryBuilder.of("Test").setProviderName("TestAmountFormatProvider").build()));
+        assertTrue(MonetaryFormats.isAvailable(AmountFormatQueryBuilder.of("Test").build()));
+        assertFalse(MonetaryFormats.isAvailable(AmountFormatQueryBuilder.of("Test").setProviderName("foo").build()));
     }
 
     @Test
     public void testGetAmountFormats_Query() {
-        Collection<MonetaryAmountFormat> formats1 = MonetaryFormats.getAmountFormats(AmountFormatQueryBuilder.of("Test")
-                .setProviderName("TestAmountFormatProvider").build());
+        Collection<MonetaryAmountFormat> formats1 = MonetaryFormats.getAmountFormats(AmountFormatQueryBuilder.of("Test").setProviderName("TestAmountFormatProvider").build());
         assertNotNull(formats1);
         assertEquals(formats1.size(), 1);
-        Collection<MonetaryAmountFormat> formats2 = MonetaryFormats.getAmountFormats(AmountFormatQueryBuilder.of("Test")
-                .build());
+        Collection<MonetaryAmountFormat> formats2 = MonetaryFormats.getAmountFormats(AmountFormatQueryBuilder.of("Test").build());
         assertNotNull(formats2);
         assertEquals(formats2.size(), 1);
-        Collection<MonetaryAmountFormat> formats3 = MonetaryFormats.getAmountFormats(AmountFormatQueryBuilder.of("Test")
-                .setProviderName("foo").build());
+        Collection<MonetaryAmountFormat> formats3 = MonetaryFormats.getAmountFormats(AmountFormatQueryBuilder.of("Test").setProviderName("foo").build());
         assertNotNull(formats3);
         assertEquals(formats3.size(), 0);
     }
@@ -91,7 +82,6 @@ public class MonetaryFormatsTest {
             f = MonetaryFormats.getAmountFormat("Test", "foo");
             assertNotNull(f);
         } catch (MonetaryException e) {
-            // OK
         }
     }
 

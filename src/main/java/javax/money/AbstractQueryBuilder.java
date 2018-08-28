@@ -8,9 +8,14 @@
  */
 package javax.money;
 
-import java.time.temporal.TemporalAccessor;
-import java.time.temporal.TemporalUnit;
-import java.util.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * This abstract class defines the common generic parts of a query. Queries are used to pass complex parameters sets
@@ -21,15 +26,13 @@ import java.util.*;
  * <p>
  * Instances of this class are not thread-safe and not serializable.
  */
-public abstract class AbstractQueryBuilder<B extends javax.money.AbstractQueryBuilder, C extends AbstractQuery>
-        extends AbstractContextBuilder<B, C> {
+public abstract class AbstractQueryBuilder<B extends javax.money.AbstractQueryBuilder, C extends AbstractQuery> extends AbstractContextBuilder<B, C> {
 
     /**
      * Initializes the query builder, as a default query builder.
      */
     public AbstractQueryBuilder() {
     }
-
 
     /**
      * Set the providers to be considered. If not set explicitly the <i>default</i> ISO currencies as
@@ -64,9 +67,18 @@ public abstract class AbstractQueryBuilder<B extends javax.money.AbstractQueryBu
      * @return this instance for chaining
      * @see #setTimestampMillis(long)
      */
-    public B setTimestamp(TemporalAccessor timestamp) {
+    @Override
+    public B setTimestamp(LocalDateTime timestamp) {
         set(AbstractQuery.KEY_QUERY_TIMESTAMP, Objects.requireNonNull(timestamp));
         return (B) this;
+    }
+
+    public B setTimestamp(LocalDate timestamp) {
+        return setTimestamp(timestamp.atTime(LocalTime.now()));
+    }
+
+    public B setTimestamp(LocalTime timestamp) {
+        return setTimestamp(LocalDate.now().atTime(timestamp));
     }
 
     /**
@@ -97,8 +109,11 @@ public abstract class AbstractQueryBuilder<B extends javax.money.AbstractQueryBu
      * @param timestamp the target timestamp
      * @return the query builder for chaining.
      */
+    @Override
     public B setTimestampMillis(long timestamp) {
-        return set(AbstractQuery.KEY_QUERY_TIMESTAMP, timestamp);
+        Date date = new Date(timestamp);
+        LocalDateTime localDateTime = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+        return set(AbstractQuery.KEY_QUERY_TIMESTAMP, localDateTime);
     }
 
     /**
@@ -107,10 +122,6 @@ public abstract class AbstractQueryBuilder<B extends javax.money.AbstractQueryBu
      * @param timestamp the target timestamp
      * @return the query builder for chaining.
      */
-    public B setTimestamp(TemporalUnit timestamp) {
-        return set(AbstractQuery.KEY_QUERY_TIMESTAMP, timestamp);
-    }
-
     /**
      * Sets the target implementation type required. This can be used to explicitly acquire a specific
      * implementation
@@ -131,6 +142,6 @@ public abstract class AbstractQueryBuilder<B extends javax.money.AbstractQueryBu
      *
      * @return a new {@link AbstractQuery}. never {@code null}.
      */
+    @Override
     public abstract C build();
-
 }

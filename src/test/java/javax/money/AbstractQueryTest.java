@@ -9,12 +9,10 @@
 package javax.money;
 
 import org.testng.annotations.Test;
-
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
-
 import static org.testng.Assert.*;
-import static org.testng.Assert.assertEquals;
 
 /**
  * Test class for {@link javax.money.AbstractQuery} and  {@link javax.money.AbstractQueryBuilder}.
@@ -23,6 +21,7 @@ public class AbstractQueryTest {
 
     private AbstractQueryBuilder<AbstractQueryBuilder, AbstractQuery> createBuilder() {
         return new AbstractQueryBuilder() {
+
             @Override
             public AbstractQuery build() {
                 return new AbstractQuery(this) {
@@ -30,7 +29,6 @@ public class AbstractQueryTest {
             }
         };
     }
-
 
     @Test
     public void testGetProviders() throws Exception {
@@ -60,16 +58,17 @@ public class AbstractQueryTest {
         b.setTimestampMillis(200L);
         AbstractQuery query = b.build();
         assertEquals(query.getTimestampMillis().longValue(), 200L);
-        assertEquals(query.getTimestamp(), Instant.ofEpochMilli(200L));
+        LocalDateTime localDateTime = LocalDateTime.parse("1969-12-31T21:00:00.200");
+        assertEquals(query.getTimestamp(), localDateTime);
     }
 
     @Test
     public void testGetTimestamp() throws Exception {
         AbstractQueryBuilder b = createBuilder();
-        Instant instant = Instant.now();
+        LocalDateTime instant = LocalDateTime.now();
         b.setTimestamp(instant);
         AbstractQuery query = b.build();
         assertEquals(query.getTimestamp(), instant);
-        assertEquals(query.getTimestampMillis().longValue(), instant.toEpochMilli());
+        assertEquals(query.getTimestamp(), instant);
     }
 }

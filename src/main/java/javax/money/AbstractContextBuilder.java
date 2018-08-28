@@ -8,6 +8,7 @@
  */
 package javax.money;
 
+import java.time.LocalDateTime;
 import java.time.temporal.TemporalAccessor;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,7 +24,7 @@ import java.util.TreeMap;
  * <p>
  * Instances of this class are not thread-safe and not serializable.
  */
-public abstract class AbstractContextBuilder<B extends AbstractContextBuilder, C extends AbstractContext>{
+public abstract class AbstractContextBuilder<B extends AbstractContextBuilder, C extends AbstractContext> {
 
     /**
      * The data map containing all values.
@@ -37,11 +38,11 @@ public abstract class AbstractContextBuilder<B extends AbstractContextBuilder, C
      * @param overwriteDuplicates flag, if existing entries should be overwritten.
      * @return this Builder, for chaining
      */
-    public B importContext(AbstractContext context, boolean overwriteDuplicates){
+    public B importContext(AbstractContext context, boolean overwriteDuplicates) {
         for (Map.Entry<String, Object> en : context.data.entrySet()) {
             if (overwriteDuplicates) {
                 this.data.put(en.getKey(), en.getValue());
-            }else{
+            } else {
                 this.data.putIfAbsent(en.getKey(), en.getValue());
             }
         }
@@ -55,7 +56,7 @@ public abstract class AbstractContextBuilder<B extends AbstractContextBuilder, C
      * @return this Builder, for chaining
      * @see #importContext(AbstractContext, boolean)
      */
-    public B importContext(AbstractContext context){
+    public B importContext(AbstractContext context) {
         Objects.requireNonNull(context);
         return importContext(context, false);
     }
@@ -72,7 +73,6 @@ public abstract class AbstractContextBuilder<B extends AbstractContextBuilder, C
         return (B) this;
     }
 
-
     /**
      * Sets an Boolean attribute.
      *
@@ -85,7 +85,6 @@ public abstract class AbstractContextBuilder<B extends AbstractContextBuilder, C
         return (B) this;
     }
 
-
     /**
      * Sets an Long attribute.
      *
@@ -97,7 +96,6 @@ public abstract class AbstractContextBuilder<B extends AbstractContextBuilder, C
         this.data.put(key, Objects.requireNonNull(value));
         return (B) this;
     }
-
 
     /**
      * Sets an Float attribute.
@@ -123,7 +121,6 @@ public abstract class AbstractContextBuilder<B extends AbstractContextBuilder, C
         return (B) this;
     }
 
-
     /**
      * Sets an Character attribute.
      *
@@ -135,7 +132,6 @@ public abstract class AbstractContextBuilder<B extends AbstractContextBuilder, C
         this.data.put(key, Objects.requireNonNull(value));
         return (B) this;
     }
-
 
     /**
      * Sets an attribute, using {@code attribute.getClass()} as attribute
@@ -200,7 +196,7 @@ public abstract class AbstractContextBuilder<B extends AbstractContextBuilder, C
      * @return this instance for chaining
      * @see #setTimestamp(java.time.temporal.TemporalAccessor)
      */
-    public B setTimestampMillis(long timestamp){
+    public B setTimestampMillis(long timestamp) {
         set(AbstractContext.KEY_TIMESTAMP, timestamp);
         return (B) this;
     }
@@ -215,7 +211,7 @@ public abstract class AbstractContextBuilder<B extends AbstractContextBuilder, C
      * @return this instance for chaining
      * @see #setTimestampMillis(long)
      */
-    public B setTimestamp(TemporalAccessor timestamp){
+    public B setTimestamp(LocalDateTime timestamp) {
         set(AbstractContext.KEY_TIMESTAMP, Objects.requireNonNull(timestamp));
         return (B) this;
     }
@@ -258,9 +254,8 @@ public abstract class AbstractContextBuilder<B extends AbstractContextBuilder, C
      *
      * @see Object#toString()
      */
-
     @Override
-    public String toString(){
+    public String toString() {
         return getClass().getSimpleName() + " [attributes:\n" + new TreeMap<>(data).toString() + ']';
     }
 }

@@ -9,11 +9,9 @@
 package javax.money.spi;
 
 import org.testng.annotations.Test;
-
 import javax.money.*;
 import javax.money.convert.*;
 import java.util.*;
-
 import static org.testng.AssertJUnit.*;
 
 /**
@@ -25,18 +23,19 @@ public class MonetaryConversionsSingletonSpiTest {
 
         @Override
         public Collection<String> getProviderNames() {
-            return Arrays.asList(new String[]{"b", "a"});
+            return Arrays.asList("b", "a");
         }
 
         @Override
         public List<String> getDefaultProviderChain() {
-            return Arrays.asList(new String[]{"a", "b"});
+            return Arrays.asList("a", "b");
         }
 
         @Override
         public ExchangeRateProvider getExchangeRateProvider(ConversionQuery conversionQuery) {
             if (conversionQuery.getProviderNames().contains("a")) {
                 return new ExchangeRateProvider() {
+
                     @Override
                     public ProviderContext getProviderContext() {
                         return ProviderContext.of("a");
@@ -50,6 +49,7 @@ public class MonetaryConversionsSingletonSpiTest {
                     @Override
                     public CurrencyConversion getCurrencyConversion(ConversionQuery conversionQuery) {
                         return new CurrencyConversion() {
+
                             @Override
                             public ConversionContext getConversionContext() {
                                 return null;
@@ -79,6 +79,7 @@ public class MonetaryConversionsSingletonSpiTest {
                 };
             } else if (conversionQuery.getProviderNames().contains("b")) {
                 return new ExchangeRateProvider() {
+
                     @Override
                     public ProviderContext getProviderContext() {
                         return ProviderContext.of("b");
@@ -92,6 +93,7 @@ public class MonetaryConversionsSingletonSpiTest {
                     @Override
                     public CurrencyConversion getCurrencyConversion(ConversionQuery conversionQuery) {
                         return new CurrencyConversion() {
+
                             @Override
                             public ConversionContext getConversionContext() {
                                 return null;
@@ -137,17 +139,17 @@ public class MonetaryConversionsSingletonSpiTest {
         assertFalse(testSpi.getExchangeRateProviders("a", "b").isEmpty());
     }
 
-    @Test(expectedExceptions = {MonetaryException.class})
+    @Test(expectedExceptions = { MonetaryException.class })
     public void testGetExchangeRateProviders_BC1() {
         assertTrue(testSpi.getExchangeRateProviders("foo").isEmpty());
     }
 
-    @Test(expectedExceptions = {MonetaryException.class})
+    @Test(expectedExceptions = { MonetaryException.class })
     public void testGetExchangeRateProviders_BC2() {
         assertTrue(testSpi.getExchangeRateProviders("foo", "a").isEmpty());
     }
 
-    @Test(expectedExceptions = {MonetaryException.class})
+    @Test(expectedExceptions = { MonetaryException.class })
     public void testGetExchangeRateProviders_BC3() {
         assertTrue(testSpi.getExchangeRateProviders("a", "foo").isEmpty());
     }
@@ -159,5 +161,4 @@ public class MonetaryConversionsSingletonSpiTest {
         assertTrue(testSpi.isConversionAvailable(ConversionQueryBuilder.of().setProviderNames("b", "b").setTermCurrency(TestCurrency.of("CHF")).build()));
         assertFalse(testSpi.isConversionAvailable(ConversionQueryBuilder.of().setProviderNames("foo").setTermCurrency(TestCurrency.of("CHF")).build()));
     }
-
 }

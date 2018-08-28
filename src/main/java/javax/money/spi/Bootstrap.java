@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.ServiceLoader;
 import java.util.logging.Logger;
-
 import javax.money.MonetaryException;
 
 /**
@@ -24,10 +23,12 @@ import javax.money.MonetaryException;
  * @author Anatole Tresch
  */
 public final class Bootstrap {
+
     /**
      * The ServiceProvider used.
      */
     private static volatile ServiceProvider serviceProviderDelegate;
+
     /**
      * The shared lock instance user.
      */
@@ -66,14 +67,12 @@ public final class Bootstrap {
         synchronized (LOCK) {
             if (Objects.isNull(Bootstrap.serviceProviderDelegate)) {
                 Bootstrap.serviceProviderDelegate = serviceProvider;
-                Logger.getLogger(Bootstrap.class.getName())
-                        .info("Money Bootstrap: new ServiceProvider set: " + serviceProvider.getClass().getName());
+                Logger.getLogger(Bootstrap.class.getName()).info("Money Bootstrap: new ServiceProvider set: " + serviceProvider.getClass().getName());
                 return null;
             } else {
                 ServiceProvider prevProvider = Bootstrap.serviceProviderDelegate;
                 Bootstrap.serviceProviderDelegate = serviceProvider;
-                Logger.getLogger(Bootstrap.class.getName())
-                        .warning("Money Bootstrap: ServiceProvider replaced: " + serviceProvider.getClass().getName());
+                Logger.getLogger(Bootstrap.class.getName()).warning("Money Bootstrap: ServiceProvider replaced: " + serviceProvider.getClass().getName());
                 return prevProvider;
             }
         }
@@ -109,16 +108,29 @@ public final class Bootstrap {
     /**
      * Delegate method for {@link ServiceProvider#getServices(Class)}.
      *
+     * @param serviceType     the service type.
+     * @param defaultServices the default service list.
+     * @return the services found.
+     * @see ServiceProvider#getServices(Class, List)
+     */
+    /**
+     * Delegate method for {@link ServiceProvider#getServices(Class)}.
+     *
      * @param serviceType the service type.
      * @return the service found, never {@code null}.
      * @see ServiceProvider#getServices(Class)
      */
     public static <T> T getService(Class<T> serviceType) {
         List<T> services = getServiceProvider().getServices(serviceType);
-        if (services.isEmpty()) {
-            throw new MonetaryException("No such service found: " + serviceType);
-        }
-        return services.get(0);
+        return services.stream().findFirst().orElseThrow(() -> new MonetaryException("No such service found: " + serviceType));
     }
-
+    /**
+     * Delegate method for {@link ServiceProvider#getServices(Class)}.
+     *
+     * @param serviceType    the service type.
+     * @param defaultService returned if no service was found.
+     * @return the service found, only {@code null}, if no service was found and
+     * {@code defaultService==null}.
+     * @see ServiceProvider#getServices(Class, List)
+     */
 }
